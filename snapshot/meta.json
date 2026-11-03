@@ -1,0 +1,55 @@
+{
+ "generated_at": "2026-11-03T23:28:17.391Z",
+ "source": "local",
+ "git_sha": "uncommitted",
+ "personas": [
+  {
+   "key": "owner",
+   "label": "Owner · Halberd Systems",
+   "blurb": "Pro tier, entitled to DCD + FCSA. Owner role.",
+   "reports_unlocked": 151,
+   "crm_rows": 22,
+   "contracts": 9000
+  },
+  {
+   "key": "member",
+   "label": "Member · Halberd Systems",
+   "blurb": "Same org and tier as the owner, member role.",
+   "reports_unlocked": 151,
+   "crm_rows": 22,
+   "contracts": 9000
+  },
+  {
+   "key": "other",
+   "label": "Other org · Cobalt Ridge",
+   "blurb": "A different tenant on the Basic tier (OSL only).",
+   "reports_unlocked": 18,
+   "crm_rows": 14,
+   "contracts": 9000
+  },
+  {
+   "key": "researcher",
+   "label": "Researcher (staff)",
+   "blurb": "Internal analyst: all research content, no customer CRM.",
+   "reports_unlocked": 600,
+   "crm_rows": 0,
+   "contracts": 9000
+  },
+  {
+   "key": "lapsed",
+   "label": "Lapsed · Meridian Fieldworks",
+   "blurb": "Pro tier, payment failed, 7-day grace expired.",
+   "reports_unlocked": 0,
+   "crm_rows": 15,
+   "contracts": 0
+  },
+  {
+   "key": "anon",
+   "label": "Anonymous",
+   "blurb": "No session, anon key only.",
+   "reports_unlocked": 0,
+   "crm_rows": 0,
+   "contracts": 0
+  }
+ ]
+}

@@ -1,0 +1,43 @@
+{
+  "name": "bid-intel-migration-demo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev -p 3400",
+    "build": "next build",
+    "start": "next start -p 3400",
+    "typecheck": "tsc --noEmit",
+    "gen:tests": "tsx scripts/gen-pgtap.ts",
+    "test:pgtap": "tsx scripts/run-pgtap.ts",
+    "test:unit": "vitest run tests/unit",
+    "test:db": "vitest run tests/db",
+    "bubble:mock": "tsx migration/mock-bubble/server.ts",
+    "migrate": "tsx migration/migrate.ts",
+    "validate": "tsx migration/validate.ts",
+    "snapshot": "tsx scripts/export-snapshot.ts",
+    "ci:collect": "tsx scripts/collect-ci-results.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "next": "^15.5.29",
+    "pg": "^8.23.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "stripe": "^23.1.0",
+    "yaml": "^2.9.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^5.1.0"
+  }
+}

@@ -1,0 +1,120 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SUPABASE_CLI_VERSION: 2.122.0
+  NODE_VERSION: 22
+
+jobs:
+  secret-scan:
+    name: Secret scan (gitleaks, full history)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        run: |
+          curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz | tar xz gitleaks
+          ./gitleaks git --redact --verbose --exit-code 1 .
+
+  app:
+    name: App (typecheck, unit tests, build, 390px + desktop smoke)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Generated tests are in sync with privacy-rules.yaml
+        run: |
+          npm run gen:tests
+          git diff --exit-code supabase/tests snapshot/matrix-manifest.json
+      - run: npm run typecheck
+      - name: Unit tests (transform, email adapter, webhook signatures)
+        run: npx vitest run tests/unit
+      - run: npm run build
+      - name: Smoke (every page × persona at 390px and 1280px; zero console errors, no horizontal overflow)
+        run: |
+          npx playwright install --with-deps chromium
+          npm start > next.log 2>&1 &
+          npx --yes wait-on@8 http://127.0.0.1:3400 -t 60000
+          node e2e/smoke.mjs http://127.0.0.1:3400
+
+  database:
+    name: Database (pgTAP matrix, mutations, migration rehearsal, attacker suite, Stripe lifecycle)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # publish the ci-latest release asset read by /security
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - uses: supabase/setup-cli@v1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+      - run: npm ci
+      - name: Start local Supabase (db, auth, rest, storage, kong)
+        run: supabase start -x studio,imgproxy,mailpit,logflare,vector,realtime,supavisor,postgres-meta,edge-runtime
+      - name: Export local connection env
+        run: |
+          supabase status -o json > /tmp/status.json
+          {
+            echo "DB_URL=$(jq -r .DB_URL /tmp/status.json)"
+            echo "SUPABASE_URL=$(jq -r .API_URL /tmp/status.json)"
+            echo "SUPABASE_ANON_KEY=$(jq -r .ANON_KEY /tmp/status.json)"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$(jq -r .SERVICE_ROLE_KEY /tmp/status.json)"
+            echo "SUPABASE_JWT_SECRET=$(jq -r .JWT_SECRET /tmp/status.json)"
+          } >> "$GITHUB_ENV"
+          mkdir -p artifacts
+      - name: pgTAP via supabase test db (pg_prove)
+        run: supabase test db
+      - name: pgTAP results as JSON + mutation check (8 injected policy bugs must be caught)
+        run: npx tsx scripts/run-pgtap.ts
+      - name: Migration rehearsal (20,620 Bubble records, run twice, validate, drift, heal, validate)
+        run: bash scripts/ci-migration.sh
+      - name: Unit tests (for the results bundle)
+        run: VITEST_SUITE=unit npx vitest run tests/unit --reporter=default --reporter=json --outputFile.json=artifacts/vitest-unit.json
+      - name: Attacker suite + Stripe lifecycle + first login + rollback log (supabase-js / pg against the migrated data)
+        run: VITEST_SUITE=db npx vitest run tests/db --reporter=default --reporter=json --outputFile.json=artifacts/vitest-db.json
+      - name: Export the UI snapshot as each persona
+        run: npx tsx scripts/export-snapshot.ts
+      - name: Bundle results
+        run: npx tsx scripts/collect-ci-results.ts
+      - name: Snapshot drift vs committed (informational)
+        run: git diff --stat -- snapshot/personas snapshot/contracts.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-and-test-results
+          path: |
+            artifacts/
+            snapshot/
+      - name: Publish ci-latest release asset
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view ci-latest >/dev/null 2>&1 || gh release create ci-latest --target "$GITHUB_SHA" --prerelease \
+            --title "Latest CI results" --notes "Machine-written by CI on every green run of main: test results, policies and the migration validation report. Read by the /security and /migration pages."
+          gh release upload ci-latest artifacts/ci-results.json artifacts/validation-report.json artifacts/validation-report.md --clobber
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop --no-backup

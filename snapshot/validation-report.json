@@ -1,0 +1,1386 @@
+{
+ "generated_at": "2026-11-03T23:28:08.791Z",
+ "status": "pass",
+ "duration_ms": 6471,
+ "bubble_records": 20620,
+ "counts": [
+  {
+   "type": "organization",
+   "bubble": 300,
+   "supabase": 300,
+   "match": true
+  },
+  {
+   "type": "user",
+   "bubble": 1500,
+   "supabase": 1500,
+   "match": true
+  },
+  {
+   "type": "subscription",
+   "bubble": 270,
+   "supabase": 270,
+   "match": true
+  },
+  {
+   "type": "report",
+   "bubble": 650,
+   "supabase": 650,
+   "match": true
+  },
+  {
+   "type": "awarded_contract",
+   "bubble": 9000,
+   "supabase": 9000,
+   "match": true
+  },
+  {
+   "type": "contact",
+   "bubble": 2400,
+   "supabase": 2400,
+   "match": true
+  },
+  {
+   "type": "opportunity",
+   "bubble": 2600,
+   "supabase": 2600,
+   "match": true
+  },
+  {
+   "type": "note",
+   "bubble": 2100,
+   "supabase": 2100,
+   "match": true
+  },
+  {
+   "type": "task",
+   "bubble": 1800,
+   "supabase": 1800,
+   "match": true
+  }
+ ],
+ "list_fields_and_files": [
+  {
+   "type": "subscription.agencies → subscription_agencies",
+   "bubble": 439,
+   "supabase": 439,
+   "match": true
+  },
+  {
+   "type": "report.tags → report_tags",
+   "bubble": 1679,
+   "supabase": 1679,
+   "match": true
+  },
+  {
+   "type": "opportunity.linked_reports → crm_opportunity_reports",
+   "bubble": 3957,
+   "supabase": 3957,
+   "match": true
+  },
+  {
+   "type": "files (report attachments + org logos) → storage",
+   "bubble": 397,
+   "supabase": 397,
+   "match": true
+  }
+ ],
+ "checksums": [
+  {
+   "type": "organization",
+   "fields": [
+    "name",
+    "slug",
+    "created"
+   ],
+   "bubble_md5": "c9e92cd4daa5c16a130d8da26e54e776",
+   "supabase_md5": "c9e92cd4daa5c16a130d8da26e54e776",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "user",
+   "fields": [
+    "email",
+    "full_name",
+    "role"
+   ],
+   "bubble_md5": "c5bad85805ac1639f55da4b1b5467f17",
+   "supabase_md5": "c5bad85805ac1639f55da4b1b5467f17",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "subscription",
+   "fields": [
+    "tier",
+    "status",
+    "stripe_subscription_id"
+   ],
+   "bubble_md5": "56efbdf550a1be3f02df68555144f9db",
+   "supabase_md5": "56efbdf550a1be3f02df68555144f9db",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "report",
+   "fields": [
+    "title",
+    "agency",
+    "tier_required",
+    "status"
+   ],
+   "bubble_md5": "7301e781cb58d815b3f9afdff5f07c0e",
+   "supabase_md5": "7301e781cb58d815b3f9afdff5f07c0e",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "awarded_contract",
+   "fields": [
+    "piid",
+    "amount",
+    "award_date",
+    "vendor"
+   ],
+   "bubble_md5": "37264af436b0bc54578e446c65701ef3",
+   "supabase_md5": "37264af436b0bc54578e446c65701ef3",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "contact",
+   "fields": [
+    "name",
+    "email",
+    "agency"
+   ],
+   "bubble_md5": "d5555c724a986152c8251eb8f7b13d29",
+   "supabase_md5": "d5555c724a986152c8251eb8f7b13d29",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "opportunity",
+   "fields": [
+    "title",
+    "stage",
+    "value",
+    "org"
+   ],
+   "bubble_md5": "8190b9fbf83a8253e96cef6c7b6595dd",
+   "supabase_md5": "8190b9fbf83a8253e96cef6c7b6595dd",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "note",
+   "fields": [
+    "body",
+    "opportunity"
+   ],
+   "bubble_md5": "5d354af43c8cd8d185a1c5ec32f758f9",
+   "supabase_md5": "5d354af43c8cd8d185a1c5ec32f758f9",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "task",
+   "fields": [
+    "title",
+    "done",
+    "opportunity"
+   ],
+   "bubble_md5": "627ffbb5720fcd4a5a84c4a41df890e0",
+   "supabase_md5": "627ffbb5720fcd4a5a84c4a41df890e0",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "subscription.agencies",
+   "fields": [
+    "parent",
+    "item"
+   ],
+   "bubble_md5": "8b9001d332219e2e09e7dc141ae06982",
+   "supabase_md5": "8b9001d332219e2e09e7dc141ae06982",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "report.tags",
+   "fields": [
+    "parent",
+    "item"
+   ],
+   "bubble_md5": "e13ed7a66b86c81ad4d040eef8ab454e",
+   "supabase_md5": "e13ed7a66b86c81ad4d040eef8ab454e",
+   "match": true,
+   "mismatched_rows": 0
+  },
+  {
+   "type": "opportunity.linked_reports",
+   "fields": [
+    "parent",
+    "item"
+   ],
+   "bubble_md5": "7d0a3a2272680f55e632b5445ebb8678",
+   "supabase_md5": "7d0a3a2272680f55e632b5445ebb8678",
+   "match": true,
+   "mismatched_rows": 0
+  }
+ ],
+ "samples": [
+  {
+   "type": "organization",
+   "bubble_id": "1615575237948x944422591699968966",
+   "uuid": "741715af-3a88-56b7-a209-1f41e6526c92",
+   "match": true,
+   "fields": [
+    {
+     "field": "name",
+     "bubble": "Granite Labs Inc.",
+     "supabase": "Granite Labs Inc.",
+     "match": true
+    },
+    {
+     "field": "slug",
+     "bubble": "granite-labs-inc",
+     "supabase": "granite-labs-inc",
+     "match": true
+    },
+    {
+     "field": "created",
+     "bubble": "2021-03-12T18:53:57",
+     "supabase": "2021-03-12T18:53:57",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "organization",
+   "bubble_id": "1615164300390x281140396364478294",
+   "uuid": "45bd2a3a-debd-5be5-a3b3-c559143af932",
+   "match": true,
+   "fields": [
+    {
+     "field": "name",
+     "bubble": "Halberd Engineering",
+     "supabase": "Halberd Engineering",
+     "match": true
+    },
+    {
+     "field": "slug",
+     "bubble": "halberd-engineering-80",
+     "supabase": "halberd-engineering-80",
+     "match": true
+    },
+    {
+     "field": "created",
+     "bubble": "2021-03-08T00:45:00",
+     "supabase": "2021-03-08T00:45:00",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "organization",
+   "bubble_id": "1614951892314x686259324612296019",
+   "uuid": "e6372730-3e60-52a7-bc6d-e50799c217b7",
+   "match": true,
+   "fields": [
+    {
+     "field": "name",
+     "bubble": "Bluewater Engineering",
+     "supabase": "Bluewater Engineering",
+     "match": true
+    },
+    {
+     "field": "slug",
+     "bubble": "bluewater-engineering-52",
+     "supabase": "bluewater-engineering-52",
+     "match": true
+    },
+    {
+     "field": "created",
+     "bubble": "2021-03-05T13:44:52",
+     "supabase": "2021-03-05T13:44:52",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "user",
+   "bubble_id": "1620201924276x868487687680240076",
+   "uuid": "fbe853e0-849a-5255-aea1-e31e30980540",
+   "match": true,
+   "fields": [
+    {
+     "field": "email",
+     "bubble": "omar.duarte.752@harborengineering140.example",
+     "supabase": "omar.duarte.752@harborengineering140.example",
+     "match": true
+    },
+    {
+     "field": "full_name",
+     "bubble": "Omar Duarte",
+     "supabase": "Omar Duarte",
+     "match": true
+    },
+    {
+     "field": "role",
+     "bubble": "member",
+     "supabase": "member",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "user",
+   "bubble_id": "1622550460627x912564170206440359",
+   "uuid": "fb7cb540-3d18-5449-9c21-a312d8bfa48c",
+   "match": true,
+   "fields": [
+    {
+     "field": "email",
+     "bubble": "casey.osei.1292@halberdengineering80.example",
+     "supabase": "casey.osei.1292@halberdengineering80.example",
+     "match": true
+    },
+    {
+     "field": "full_name",
+     "bubble": "Casey Osei",
+     "supabase": "Casey Osei",
+     "match": true
+    },
+    {
+     "field": "role",
+     "bubble": "member",
+     "supabase": "member",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "user",
+   "bubble_id": "1619325470689x687886032576951886",
+   "uuid": "62a6ae57-f385-5dd2-86d3-04033945acd7",
+   "match": true,
+   "fields": [
+    {
+     "field": "email",
+     "bubble": "jamie.marsh.556@beaconmissionservices244.example",
+     "supabase": "jamie.marsh.556@beaconmissionservices244.example",
+     "match": true
+    },
+    {
+     "field": "full_name",
+     "bubble": "Jamie Marsh",
+     "supabase": "Jamie Marsh",
+     "match": true
+    },
+    {
+     "field": "role",
+     "bubble": "member",
+     "supabase": "member",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "subscription",
+   "bubble_id": "1623830245633x753040642412511844",
+   "uuid": "9409a55a-c547-5ce9-86b0-3c8be9cdeaaa",
+   "match": true,
+   "fields": [
+    {
+     "field": "tier",
+     "bubble": "pro",
+     "supabase": "pro",
+     "match": true
+    },
+    {
+     "field": "status",
+     "bubble": "active",
+     "supabase": "active",
+     "match": true
+    },
+    {
+     "field": "stripe_subscription_id",
+     "bubble": "sub_499daf74b54f36",
+     "supabase": "sub_499daf74b54f36",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "subscription",
+   "bubble_id": "1624082577946x445440672738687491",
+   "uuid": "d8a056ab-0dc5-550b-b8a7-076a6a5b1377",
+   "match": true,
+   "fields": [
+    {
+     "field": "tier",
+     "bubble": "pro",
+     "supabase": "pro",
+     "match": true
+    },
+    {
+     "field": "status",
+     "bubble": "active",
+     "supabase": "active",
+     "match": true
+    },
+    {
+     "field": "stripe_subscription_id",
+     "bubble": "sub_afcf8f50fbc8fd",
+     "supabase": "sub_afcf8f50fbc8fd",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "subscription",
+   "bubble_id": "1624276340867x766099826499301775",
+   "uuid": "7c57d425-a0a1-54e6-901b-ab4de13c6b3c",
+   "match": true,
+   "fields": [
+    {
+     "field": "tier",
+     "bubble": "enterprise",
+     "supabase": "enterprise",
+     "match": true
+    },
+    {
+     "field": "status",
+     "bubble": "past_due",
+     "supabase": "past_due",
+     "match": true
+    },
+    {
+     "field": "stripe_subscription_id",
+     "bubble": "sub_4a682fce528876",
+     "supabase": "sub_4a682fce528876",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "report",
+   "bubble_id": "1627202994450x999771746359188978",
+   "uuid": "e812e061-222b-5878-8ef9-802ea4473a29",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Medical Reserve: health data exchange agency profile FY2027",
+     "supabase": "Medical Reserve: health data exchange agency profile FY2027",
+     "match": true
+    },
+    {
+     "field": "agency",
+     "bubble": "FEMR",
+     "supabase": "FEMR",
+     "match": true
+    },
+    {
+     "field": "tier_required",
+     "bubble": "pro",
+     "supabase": "pro",
+     "match": true
+    },
+    {
+     "field": "status",
+     "bubble": "published",
+     "supabase": "published",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "report",
+   "bubble_id": "1627954306118x398661997738331386",
+   "uuid": "67a8b731-8f90-5864-b44d-618e94ff32c2",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Space Logistics: facilities support budget brief FY2027",
+     "supabase": "Space Logistics: facilities support budget brief FY2027",
+     "match": true
+    },
+    {
+     "field": "agency",
+     "bubble": "OSL",
+     "supabase": "OSL",
+     "match": true
+    },
+    {
+     "field": "tier_required",
+     "bubble": "basic",
+     "supabase": "basic",
+     "match": true
+    },
+    {
+     "field": "status",
+     "bubble": "published",
+     "supabase": "published",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "report",
+   "bubble_id": "1625049864523x308193054943229000",
+   "uuid": "6ec4783d-4cca-5737-af19-3243a0d79744",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Shield Agency: facilities support rfp analysis FY2027",
+     "supabase": "Shield Agency: facilities support rfp analysis FY2027",
+     "match": true
+    },
+    {
+     "field": "agency",
+     "bubble": "FCSA",
+     "supabase": "FCSA",
+     "match": true
+    },
+    {
+     "field": "tier_required",
+     "bubble": "pro",
+     "supabase": "pro",
+     "match": true
+    },
+    {
+     "field": "status",
+     "bubble": "published",
+     "supabase": "published",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "awarded_contract",
+   "bubble_id": "1640654902269x623210693660974985",
+   "uuid": "d8de38fc-643a-57d8-8cab-0b9493c175b2",
+   "match": true,
+   "fields": [
+    {
+     "field": "piid",
+     "bubble": "MSC-24-02664",
+     "supabase": "MSC-24-02664",
+     "match": true
+    },
+    {
+     "field": "amount",
+     "bubble": "21658911.40",
+     "supabase": "21658911.40",
+     "match": true
+    },
+    {
+     "field": "award_date",
+     "bubble": "2023-05-14",
+     "supabase": "2023-05-14",
+     "match": true
+    },
+    {
+     "field": "vendor",
+     "bubble": "Ironleaf Defense Group",
+     "supabase": "Ironleaf Defense Group",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "awarded_contract",
+   "bubble_id": "1637889923457x675609416491682958",
+   "uuid": "59a9ab87-11be-5639-bb77-9f306c3931d8",
+   "match": true,
+   "fields": [
+    {
+     "field": "piid",
+     "bubble": "NGRO-25-02056",
+     "supabase": "NGRO-25-02056",
+     "match": true
+    },
+    {
+     "field": "amount",
+     "bubble": "47576981.09",
+     "supabase": "47576981.09",
+     "match": true
+    },
+    {
+     "field": "award_date",
+     "bubble": "2021-08-31",
+     "supabase": "2021-08-31",
+     "match": true
+    },
+    {
+     "field": "vendor",
+     "bubble": "Beacon Defense Group",
+     "supabase": "Beacon Defense Group",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "awarded_contract",
+   "bubble_id": "1647325032935x525224504980300804",
+   "uuid": "caa08a8a-6f77-5773-8865-a17d09d54a42",
+   "match": true,
+   "fields": [
+    {
+     "field": "piid",
+     "bubble": "FEMR-26-04136",
+     "supabase": "FEMR-26-04136",
+     "match": true
+    },
+    {
+     "field": "amount",
+     "bubble": "141037.88",
+     "supabase": "141037.88",
+     "match": true
+    },
+    {
+     "field": "award_date",
+     "bubble": "2022-11-06",
+     "supabase": "2022-11-06",
+     "match": true
+    },
+    {
+     "field": "vendor",
+     "bubble": "Summit Solutions",
+     "supabase": "Summit Solutions",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "contact",
+   "bubble_id": "1673811585408x609112072957577179",
+   "uuid": "653b5336-bf27-548a-81f3-1ef0a9264eef",
+   "match": true,
+   "fields": [
+    {
+     "field": "name",
+     "bubble": "Sam Brennan",
+     "supabase": "Sam Brennan",
+     "match": true
+    },
+    {
+     "field": "email",
+     "bubble": "sam.brennan.1024@osl.example",
+     "supabase": "sam.brennan.1024@osl.example",
+     "match": true
+    },
+    {
+     "field": "agency",
+     "bubble": "OSL",
+     "supabase": "OSL",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "contact",
+   "bubble_id": "1670643306386x911594927754168223",
+   "uuid": "e6125542-7162-5db9-9d4f-789af8d230ec",
+   "match": true,
+   "fields": [
+    {
+     "field": "name",
+     "bubble": "Logan Marsh",
+     "supabase": "Logan Marsh",
+     "match": true
+    },
+    {
+     "field": "email",
+     "bubble": "logan.marsh.320@bts.example",
+     "supabase": "logan.marsh.320@bts.example",
+     "match": true
+    },
+    {
+     "field": "agency",
+     "bubble": "BTS",
+     "supabase": "BTS",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "contact",
+   "bubble_id": "1676380053277x397425019694638027",
+   "uuid": "ef07be1d-988f-5f84-8174-ace388c9475f",
+   "match": true,
+   "fields": [
+    {
+     "field": "name",
+     "bubble": "Avery Whitfield",
+     "supabase": "Avery Whitfield",
+     "match": true
+    },
+    {
+     "field": "email",
+     "bubble": "avery.whitfield.1600@femr.example",
+     "supabase": "avery.whitfield.1600@femr.example",
+     "match": true
+    },
+    {
+     "field": "agency",
+     "bubble": "FEMR",
+     "supabase": "FEMR",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "opportunity",
+   "bubble_id": "1686189788362x753571634692824179",
+   "uuid": "ae4dda68-3160-502c-8034-8dbb1ea733b2",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Cloud migration — Defense IDIQ task order",
+     "supabase": "Cloud migration — Defense IDIQ task order",
+     "match": true
+    },
+    {
+     "field": "stage",
+     "bubble": "submitted",
+     "supabase": "submitted",
+     "match": true
+    },
+    {
+     "field": "value",
+     "bubble": "3543286.00",
+     "supabase": "3543286.00",
+     "match": true
+    },
+    {
+     "field": "org",
+     "bubble": "b91c1758-dffa-5022-80bb-28d77d1af358",
+     "supabase": "b91c1758-dffa-5022-80bb-28d77d1af358",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "opportunity",
+   "bubble_id": "1691453280748x577958894215219995",
+   "uuid": "c1cd3297-2ad8-58ca-8709-bfa589573cf0",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Zero trust architecture — Office new start",
+     "supabase": "Zero trust architecture — Office new start",
+     "match": true
+    },
+    {
+     "field": "stage",
+     "bubble": "qualifying",
+     "supabase": "qualifying",
+     "match": true
+    },
+    {
+     "field": "value",
+     "bubble": "24630192.00",
+     "supabase": "24630192.00",
+     "match": true
+    },
+    {
+     "field": "org",
+     "bubble": "d4df68a3-3447-5ab9-9e42-c694711a007e",
+     "supabase": "d4df68a3-3447-5ab9-9e42-c694711a007e",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "opportunity",
+   "bubble_id": "1689662948788x453065488329602430",
+   "uuid": "891fed30-9090-57f8-bf99-032b7da798be",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "C5ISR integration — Agency IDIQ task order",
+     "supabase": "C5ISR integration — Agency IDIQ task order",
+     "match": true
+    },
+    {
+     "field": "stage",
+     "bubble": "proposal",
+     "supabase": "proposal",
+     "match": true
+    },
+    {
+     "field": "value",
+     "bubble": "2428281.00",
+     "supabase": "2428281.00",
+     "match": true
+    },
+    {
+     "field": "org",
+     "bubble": "8bb10a33-05c3-582a-aa62-1054667fad1d",
+     "supabase": "8bb10a33-05c3-582a-aa62-1054667fad1d",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "bubble_id": "1693285783133x471589017589983471",
+   "uuid": "0ebb118a-0803-5f78-8756-2399eaf2cbb0",
+   "match": true,
+   "fields": [
+    {
+     "field": "body",
+     "bubble": "Customer visit notes: pain points around depot maintenance.",
+     "supabase": "Customer visit notes: pain points around depot maintenance.",
+     "match": true
+    },
+    {
+     "field": "opportunity",
+     "bubble": "ed7870ec-9d88-5fe3-a467-4b4e0a175031",
+     "supabase": "ed7870ec-9d88-5fe3-a467-4b4e0a175031",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "bubble_id": "1696278530330x379616583186623252",
+   "uuid": "c4d7d678-5fc3-563d-be04-418a256d7795",
+   "match": true,
+   "fields": [
+    {
+     "field": "body",
+     "bubble": "Customer visit notes: pain points around cloud migration.",
+     "supabase": "Customer visit notes: pain points around cloud migration.",
+     "match": true
+    },
+    {
+     "field": "opportunity",
+     "bubble": "801dba29-0c7f-5ea2-b915-46d612a663cc",
+     "supabase": "801dba29-0c7f-5ea2-b915-46d612a663cc",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "bubble_id": "1696851122003x981658080619479961",
+   "uuid": "343c6ee0-b7e1-5c0f-8959-ec062bf0978a",
+   "match": true,
+   "fields": [
+    {
+     "field": "body",
+     "bubble": "Competitor intel: incumbent is weak on supply chain risk.",
+     "supabase": "Competitor intel: incumbent is weak on supply chain risk.",
+     "match": true
+    },
+    {
+     "field": "opportunity",
+     "bubble": "234caa0c-3f45-5f41-8e08-4ad9df608156",
+     "supabase": "234caa0c-3f45-5f41-8e08-4ad9df608156",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "task",
+   "bubble_id": "1704067795867x570422105551371224",
+   "uuid": "58586449-c44c-5162-b6cc-835c6d6ab48a",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Price volume review",
+     "supabase": "Price volume review",
+     "match": true
+    },
+    {
+     "field": "done",
+     "bubble": "false",
+     "supabase": "false",
+     "match": true
+    },
+    {
+     "field": "opportunity",
+     "bubble": "76547bc5-4d9b-5453-b00c-330d936a1b93",
+     "supabase": "76547bc5-4d9b-5453-b00c-330d936a1b93",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "task",
+   "bubble_id": "1704642985186x889670293803829616",
+   "uuid": "e6266333-186c-5d5f-a781-888e0bb0c51b",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Submit questions to CO",
+     "supabase": "Submit questions to CO",
+     "match": true
+    },
+    {
+     "field": "done",
+     "bubble": "false",
+     "supabase": "false",
+     "match": true
+    },
+    {
+     "field": "opportunity",
+     "bubble": "10bde34e-0412-5184-8319-5740cb6c3c31",
+     "supabase": "10bde34e-0412-5184-8319-5740cb6c3c31",
+     "match": true
+    }
+   ]
+  },
+  {
+   "type": "task",
+   "bubble_id": "1705284086633x438365135864819776",
+   "uuid": "405d99a8-4274-5530-a1a4-b852eff04bcc",
+   "match": true,
+   "fields": [
+    {
+     "field": "title",
+     "bubble": "Update win themes",
+     "supabase": "Update win themes",
+     "match": true
+    },
+    {
+     "field": "done",
+     "bubble": "true",
+     "supabase": "true",
+     "match": true
+    },
+    {
+     "field": "opportunity",
+     "bubble": "0ff506f8-f471-56ef-9e63-b4c048faeef4",
+     "supabase": "0ff506f8-f471-56ef-9e63-b4c048faeef4",
+     "match": true
+    }
+   ]
+  }
+ ],
+ "integrity": [
+  {
+   "check": "members without an organization",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "members.user_id without an auth user",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "auth users without an email identity",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "auth users with a password (should be none: magic link first login)",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "opportunities owned by a member of another org",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "notes whose org differs from their opportunity's org",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "tasks whose org differs from their opportunity's org",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "notes authored by a member of another org",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "opportunity → report links to missing reports",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "subscriptions whose entitlements don't match their tier",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "id_map entries whose target row is missing",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "report attachments missing from storage",
+   "violations": 0,
+   "ok": true
+  },
+  {
+   "check": "org logos missing from storage",
+   "violations": 0,
+   "ok": true
+  }
+ ],
+ "users_without_email": {
+  "count": 6,
+  "users": [
+   {
+    "bubble_id": "1618184998702x982880144989700396",
+    "name": "Tariq Okafor",
+    "member_id": "1d934f93-4c92-538b-a5aa-3d90409ea646"
+   },
+   {
+    "bubble_id": "1619137712781x833205438913406475",
+    "name": "Rowan Sorensen",
+    "member_id": "5b8c071c-b81d-5ded-8847-10bfc4259cb4"
+   },
+   {
+    "bubble_id": "1620120479399x673349467783087215",
+    "name": "Omar Marsh",
+    "member_id": "544b7215-f3c8-51bc-9e5e-dd4e08f74f6d"
+   },
+   {
+    "bubble_id": "1620868271635x446053935739707472",
+    "name": "Logan Kowalski",
+    "member_id": "461214fe-6bed-5e79-93f2-e1f6a20064ff"
+   },
+   {
+    "bubble_id": "1622064085458x858279133883091899",
+    "name": "Dana Moreau",
+    "member_id": "bd412ade-6d20-5ccf-8944-62442e178d14"
+   },
+   {
+    "bubble_id": "1623033521402x777055182183187112",
+    "name": "Reese Whitfield",
+    "member_id": "00c2b023-c4d5-51b7-aee1-2a948ad58edb"
+   }
+  ]
+ },
+ "issues": [
+  {
+   "kind": "cross_tenant_reference",
+   "bubble_type": "note",
+   "bubble_id": "1693569530171x258914276525442471",
+   "detail": "author → user from another organization; set to null (Bubble did not enforce this)"
+  },
+  {
+   "kind": "cross_tenant_reference",
+   "bubble_type": "note",
+   "bubble_id": "1698546724629x681803662404908201",
+   "detail": "author → user from another organization; set to null (Bubble did not enforce this)"
+  },
+  {
+   "kind": "dangling_reference",
+   "bubble_type": "opportunity",
+   "bubble_id": "1684106872009x978866339608732508",
+   "detail": "owner → 1622000000000x999999999999999999 does not exist in Bubble; set to null"
+  },
+  {
+   "kind": "duplicate_email",
+   "bubble_type": "user",
+   "bubble_id": "1622210034686x587702687761877075",
+   "detail": "email jo.haddad.640@northgatepartners28.example already belongs to 1619699516193x119835518845341749; kept as member without login pending merge"
+  },
+  {
+   "kind": "stripe_customer_backfilled",
+   "bubble_type": "organization",
+   "bubble_id": "1614985914363x122609667933904446",
+   "detail": "stripe_customer_id missing in Bubble; matched cus_d4ea5f32de36bc via Stripe metadata.bubble_org_id"
+  },
+  {
+   "kind": "stripe_customer_backfilled",
+   "bubble_type": "organization",
+   "bubble_id": "1615578190676x390007805230042585",
+   "detail": "stripe_customer_id missing in Bubble; matched cus_554153af71a644 via Stripe metadata.bubble_org_id"
+  },
+  {
+   "kind": "stripe_customer_backfilled",
+   "bubble_type": "organization",
+   "bubble_id": "1616247115447x191164008529763523",
+   "detail": "stripe_customer_id missing in Bubble; matched cus_a0d89f4aea60f5 via Stripe metadata.bubble_org_id"
+  },
+  {
+   "kind": "user_without_email",
+   "bubble_type": "user",
+   "bubble_id": "1618184998702x982880144989700396",
+   "detail": "Tariq Okafor: migrated as a member without a login; needs manual outreach"
+  },
+  {
+   "kind": "user_without_email",
+   "bubble_type": "user",
+   "bubble_id": "1619137712781x833205438913406475",
+   "detail": "Rowan Sorensen: migrated as a member without a login; needs manual outreach"
+  },
+  {
+   "kind": "user_without_email",
+   "bubble_type": "user",
+   "bubble_id": "1620120479399x673349467783087215",
+   "detail": "Omar Marsh: migrated as a member without a login; needs manual outreach"
+  },
+  {
+   "kind": "user_without_email",
+   "bubble_type": "user",
+   "bubble_id": "1620868271635x446053935739707472",
+   "detail": "Logan Kowalski: migrated as a member without a login; needs manual outreach"
+  },
+  {
+   "kind": "user_without_email",
+   "bubble_type": "user",
+   "bubble_id": "1622064085458x858279133883091899",
+   "detail": "Dana Moreau: migrated as a member without a login; needs manual outreach"
+  },
+  {
+   "kind": "user_without_email",
+   "bubble_type": "user",
+   "bubble_id": "1623033521402x777055182183187112",
+   "detail": "Reese Whitfield: migrated as a member without a login; needs manual outreach"
+  }
+ ],
+ "stripe": {
+  "customers_in_export": 272,
+  "orgs_with_customer_id": 270,
+  "matched_by_id_and_metadata": 270,
+  "backfilled_from_stripe_metadata": 3,
+  "subscribed_orgs_without_customer": [],
+  "metadata_mismatch": [],
+  "stripe_customers_without_org": [
+   {
+    "id": "cus_orphan00000001",
+    "bubble_org_id": "1601000000000x100000000000000001"
+   },
+   {
+    "id": "cus_orphan00000002",
+    "bubble_org_id": null
+   }
+  ]
+ },
+ "idempotency": {
+  "first_run": "3",
+  "second_run": "4",
+  "second_run_inserted": 0,
+  "second_run_updated": 0,
+  "second_run_files_uploaded": 0,
+  "ok": true
+ },
+ "last_run": {
+  "run": "4",
+  "load": {
+   "id_map": {
+    "ms": 186,
+    "rows": 20620,
+    "batches": 21,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 20620
+   },
+   "members": {
+    "ms": 16,
+    "rows": 1488,
+    "batches": 3,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 1488
+   },
+   "reports": {
+    "ms": 12,
+    "rows": 650,
+    "batches": 2,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 650
+   },
+   "contacts": {
+    "ms": 35,
+    "rows": 2400,
+    "batches": 5,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 2400
+   },
+   "crm_notes": {
+    "ms": 21,
+    "rows": 2100,
+    "batches": 5,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 2100
+   },
+   "crm_tasks": {
+    "ms": 20,
+    "rows": 1800,
+    "batches": 4,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 1800
+   },
+   "auth_users": {
+    "ms": 30,
+    "rows": 1493,
+    "batches": 3,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 1493
+   },
+   "report_tags": {
+    "ms": 12,
+    "rows": 1679,
+    "batches": 4,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 1679
+   },
+   "researchers": {
+    "ms": 2,
+    "rows": 12,
+    "batches": 1,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 12
+   },
+   "organizations": {
+    "ms": 3,
+    "rows": 300,
+    "batches": 1,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 300
+   },
+   "subscriptions": {
+    "ms": 4,
+    "rows": 270,
+    "batches": 1,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 270
+   },
+   "awarded_contracts": {
+    "ms": 209,
+    "rows": 9000,
+    "batches": 18,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 9000
+   },
+   "crm_opportunities": {
+    "ms": 49,
+    "rows": 2600,
+    "batches": 6,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 2600
+   },
+   "subscription_agencies": {
+    "ms": 4,
+    "rows": 439,
+    "batches": 1,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 439
+   },
+   "crm_opportunity_reports": {
+    "ms": 38,
+    "rows": 3957,
+    "batches": 8,
+    "removed": 0,
+    "updated": 0,
+    "inserted": 0,
+    "unchanged": 3957
+   }
+  },
+  "files": {
+   "bytes": 0,
+   "total": 397,
+   "skipped": 397,
+   "uploaded": 0
+  },
+  "issues": {
+   "duplicate_email": 1,
+   "dangling_reference": 1,
+   "user_without_email": 6,
+   "cross_tenant_reference": 2,
+   "stripe_customer_backfilled": 3
+  },
+  "totals": {
+   "removed": 0,
+   "updated": 0,
+   "inserted": 0,
+   "unchanged": 48808
+  },
+  "extract": {
+   "note": {
+    "pages": 21,
+    "records": 2100
+   },
+   "task": {
+    "pages": 18,
+    "records": 1800
+   },
+   "user": {
+    "pages": 15,
+    "records": 1500
+   },
+   "report": {
+    "pages": 7,
+    "records": 650
+   },
+   "contact": {
+    "pages": 24,
+    "records": 2400
+   },
+   "opportunity": {
+    "pages": 26,
+    "records": 2600
+   },
+   "organization": {
+    "pages": 3,
+    "records": 300
+   },
+   "subscription": {
+    "pages": 3,
+    "records": 270
+   },
+   "awarded_contract": {
+    "pages": 90,
+    "records": 9000
+   }
+  },
+  "timings_ms": {
+   "load": 787,
+   "files": 2,
+   "total": 6184,
+   "extract": 5236,
+   "transform": 126
+  },
+  "bubble_records": 20620
+ }
+}

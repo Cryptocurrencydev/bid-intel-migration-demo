@@ -1,0 +1,398 @@
+# Bidmarker (fictional) — Bubble privacy rules, written out as a readable spec.
+#
+# Each data type lists the rules exactly as they are configured in the Bubble editor
+# (Data → Privacy): a condition, then the permission checkboxes Bubble offers
+#   view_fields          "View all fields" or a list of fields ("View: title, agency")
+#   find_in_searches     "Find this in searches"
+#   view_attached_files  "View attached files"
+#   auto_binding         "Allow auto-binding" (edits from the page), per field
+# "Everyone else" is Bubble's catch-all row.
+#
+# Below each data type, `postgres:` names the RLS policies / column grants / views that
+# implement it (supabase/migrations/*_privacy.sql), and `probes:` is the allow/deny matrix.
+# scripts/gen-pgtap.ts reads this file and writes supabase/tests/10_privacy_matrix.test.sql:
+# one assertion per persona × probe. Any persona not listed under `allow` must be denied.
+
+version: 1
+app: Bidmarker
+
+personas:
+  anon:            { kind: anon,   label: "Anonymous visitor (anon key, no session)" }
+  free_user:       { kind: member, org: org_free,   role: owner,  label: "Org F owner, no subscription" }
+  basic_member:    { kind: member, org: org_basic,  role: member, label: "Org C member, Basic tier (DCD)" }
+  pro_owner:       { kind: member, org: org_a,      role: owner,  label: "Org A owner, Pro tier (DCD, FCSA)" }
+  pro_admin:       { kind: member, org: org_a,      role: admin,  label: "Org A admin" }
+  pro_member:      { kind: member, org: org_a,      role: member, label: "Org A member" }
+  other_org_owner: { kind: member, org: org_b,      role: owner,  label: "Org B owner, Pro tier (OSL only)" }
+  grace_member:    { kind: member, org: org_grace,  role: member, label: "Org D member, payment failed, inside 7-day grace" }
+  lapsed_member:   { kind: member, org: org_lapsed, role: member, label: "Org E member, payment failed, grace expired" }
+  researcher:      { kind: researcher,              label: "Internal researcher (staff)" }
+
+# Fixed ids from supabase/seed.sql, substituted into probe SQL as {{name}}.
+fixtures:
+  org_a:        00000000-0000-4000-a000-00000000000a
+  org_b:        00000000-0000-4000-a000-00000000000b
+  org_basic:    00000000-0000-4000-a000-00000000000c
+  org_grace:    00000000-0000-4000-a000-00000000000d
+  org_lapsed:   00000000-0000-4000-a000-00000000000e
+  org_free:     00000000-0000-4000-a000-00000000000f
+  sub_a:        00000000-0000-4000-b000-00000000000a
+  member_a_owner:  00000000-0000-4000-c000-0000000000a1
+  member_a_admin:  00000000-0000-4000-c000-0000000000a2
+  member_a_member: 00000000-0000-4000-c000-0000000000a3
+  rpt_pro_dcd:   00000000-0000-4000-d000-000000000001
+  rpt_basic_dcd: 00000000-0000-4000-d000-000000000002
+  rpt_pro_osl:   00000000-0000-4000-d000-000000000003
+  rpt_draft:     00000000-0000-4000-d000-000000000004
+  contact_dcd:   00000000-0000-4000-e000-000000000001
+  contract_1:    00000000-0000-4000-e100-000000000001
+  opp_a:         00000000-0000-4000-f000-00000000000a
+  opp_b:         00000000-0000-4000-f000-00000000000b
+  note_a:        00000000-0000-4000-f100-00000000000a
+  task_a:        00000000-0000-4000-f200-00000000000a
+  researcher_1:  00000000-0000-4000-9000-000000000001
+
+# Role groups used in allow lists (expanded by the generator).
+groups:
+  org_a: [pro_owner, pro_admin, pro_member]
+  org_a_managers: [pro_owner, pro_admin]
+  subscribers_in_good_standing: [basic_member, pro_owner, pro_admin, pro_member, other_org_owner, grace_member]
+  pro_in_good_standing: [pro_owner, pro_admin, pro_member, other_org_owner, grace_member]
+  everyone: [anon, free_user, basic_member, pro_owner, pro_admin, pro_member, other_org_owner, grace_member, lapsed_member, researcher]
+
+option_sets:
+  OrgRole: [owner, admin, member]
+  Tier: [free, basic, pro, enterprise]
+  SubscriptionStatus: [trialing, active, past_due, canceled, incomplete]
+  Agency: [DCD, FHDA, OSL, NGRO, BTS, FCSA, MSC, FEMR]
+  ReportCategory: [forecast, rfp_analysis, recompete, budget_brief, agency_profile]
+  OpportunityStage: [identified, qualifying, capture, proposal, submitted, won, lost, no_bid]
+  SetAside: [full_and_open, small_business, 8a, hubzone, sdvosb, wosb]
+
+# What each tier unlocks. Stripe price lookup_key → tier → these entitlement rows.
+# RLS never looks at the tier directly; it asks has_entitlement(feature), which is also
+# false whenever the subscription is not in good standing (past grace, canceled).
+entitlements:
+  free: []
+  basic: [reports.preview, reports.read.basic, contracts.search, contacts.directory]
+  pro: [reports.preview, reports.read.basic, reports.read.pro, contracts.search, contacts.directory, contacts.full]
+  enterprise: [reports.preview, reports.read.basic, reports.read.pro, reports.read.enterprise, contracts.search, contacts.directory, contacts.full, agencies.all]
+  good_standing: "status in (active, trialing), or status = past_due and now() < grace_until (7 days after the first failed invoice)"
+
+data_types:
+
+  agency:
+    table: public.agencies
+    bubble_rules:
+      - name: Everyone
+        when: "option set (Bubble option sets are public to every page)"
+        view_fields: all
+        find_in_searches: true
+    postgres:
+      policies: [agencies_select_all]
+    probes:
+      select: { kind: rows, sql: "select code from public.agencies where code = 'DCD'", allow: [everyone] }
+      insert: { kind: dml,  sql: "insert into public.agencies (code, name) values ('DCD', 'x') on conflict do nothing", allow: [], control: false }
+
+  organization:
+    table: public.organizations
+    bubble_rules:
+      - name: Member of this organization
+        when: "Current User's organization is This Organization"
+        view_fields: [name, slug, logo, Created Date]
+        find_in_searches: true
+        view_attached_files: true
+        auto_binding: { name: "only when Current User's role is owner or admin" }
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+        find_in_searches: false
+    restricted_fields:
+      stripe_customer_id: "Not visible to anyone in the app. Owners/admins read it through billing_details()."
+    postgres:
+      policies: [organizations_select_member, organizations_update_manager, org_logos_select_member]
+      column_grants: "select (id, name, slug, logo_path, created_at); update (name) — stripe_customer_id is never granted"
+    probes:
+      select:            { kind: rows, sql: "select id from public.organizations where id = '{{org_a}}'", allow: [org_a] }
+      select_stripe_customer_id: { kind: rows, sql: "select stripe_customer_id from public.organizations where id = '{{org_a}}'", allow: [] }
+      update_name:       { kind: dml,  sql: "update public.organizations set name = 'Renamed' where id = '{{org_a}}'", allow: [org_a_managers] }
+      update_stripe_customer_id: { kind: dml, sql: "update public.organizations set stripe_customer_id = 'cus_attacker' where id = '{{org_a}}'", allow: [] }
+      insert:            { kind: dml,  sql: "insert into public.organizations (name, slug) values ('Evil', 'evil')", allow: [] }
+      delete:            { kind: dml,  sql: "delete from public.organizations where id = '{{org_a}}'", allow: [] }
+
+  member:
+    table: public.members
+    bubble_rules:
+      - name: Same organization
+        when: "Current User's organization is This User's organization"
+        view_fields: [full_name, email, role, Created Date]
+        find_in_searches: true
+        auto_binding: { full_name: "when This User is Current User, or Current User's role is owner/admin" }
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+        find_in_searches: false
+    restricted_fields:
+      role: "Never auto-bound. Changed only through the set_member_role() workflow (owner only, last owner protected)."
+    postgres:
+      policies: [members_select_same_org, members_insert_manager, members_update_self_or_manager, members_delete_manager]
+      column_grants: "insert (org_id, email, full_name, role); update (full_name) — role is not updatable directly"
+      rpc: [set_member_role]
+    probes:
+      select:            { kind: rows, sql: "select id from public.members where id = '{{member_a_member}}'", allow: [org_a] }
+      insert_invite:     { kind: dml,  sql: "insert into public.members (org_id, email, full_name, role) values ('{{org_a}}', 'new@fixture.test', 'New Person', 'member')", allow: [org_a_managers] }
+      insert_owner_invite: { kind: dml, sql: "insert into public.members (org_id, email, full_name, role) values ('{{org_a}}', 'boss@fixture.test', 'Shadow Owner', 'owner')", allow: [pro_owner] }
+      update_full_name:  { kind: dml,  sql: "update public.members set full_name = 'Renamed' where id = '{{member_a_member}}'", allow: [org_a] }
+      update_role_direct: { kind: dml, sql: "update public.members set role = 'owner' where id = '{{member_a_member}}'", allow: [] }
+      rpc_set_member_role: { kind: call, sql: "select public.set_member_role('{{member_a_member}}', 'admin')", allow: [pro_owner], control: false }
+      delete:            { kind: dml,  sql: "delete from public.members where id = '{{member_a_member}}'", allow: [org_a_managers] }
+
+  subscription:
+    table: public.subscriptions
+    bubble_rules:
+      - name: Member of the subscribed organization
+        when: "Current User's organization is This Subscription's organization"
+        view_fields: [tier, status, current_period_end, grace_until, agencies]
+        find_in_searches: true
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+    restricted_fields:
+      stripe_subscription_id: "Owner/admin only, through billing_details()."
+      tier: "Written only by the Stripe webhook (service role). No client can upgrade itself."
+    postgres:
+      policies: [subscriptions_select_member, subscription_agencies_select_member]
+      column_grants: "select (id, org_id, tier, status, current_period_end, grace_until); no insert/update/delete grants"
+      rpc: [billing_details]
+    probes:
+      select:            { kind: rows, sql: "select id from public.subscriptions where org_id = '{{org_a}}'", allow: [org_a] }
+      select_stripe_subscription_id: { kind: rows, sql: "select stripe_subscription_id from public.subscriptions where org_id = '{{org_a}}'", allow: [] }
+      select_agencies:   { kind: rows, sql: "select agency from public.subscription_agencies where subscription_id = '{{sub_a}}'", allow: [org_a] }
+      update_tier:       { kind: dml,  sql: "update public.subscriptions set tier = 'enterprise' where org_id = '{{org_a}}'", allow: [] }
+      add_agency:        { kind: dml,  sql: "insert into public.subscription_agencies (subscription_id, agency) values ('{{sub_a}}', 'OSL')", allow: [] }
+      insert:            { kind: dml,  sql: "insert into public.subscriptions (org_id, tier, status) values ('{{org_free}}', 'enterprise', 'active')", allow: [] }
+      rpc_billing_details: { kind: call, sql: "select stripe_customer_id from public.billing_details() where org_id = '{{org_a}}'", allow: [org_a_managers], control: false }
+
+  entitlement:
+    table: public.entitlements
+    bubble_rules:
+      - name: Member of the organization
+        when: "Current User's organization is This Entitlement's organization"
+        view_fields: [feature]
+        find_in_searches: true
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+    postgres:
+      policies: [entitlements_select_member]
+      column_grants: "select only; rows are derived from the tier by a trigger"
+    probes:
+      select:            { kind: rows, sql: "select feature from public.entitlements where org_id = '{{org_a}}'", allow: [org_a] }
+      insert_self_grant: { kind: dml,  sql: "insert into public.entitlements (org_id, feature) values ('{{org_a}}', 'agencies.all')", allow: [] }
+      delete:            { kind: dml,  sql: "delete from public.entitlements where org_id = '{{org_a}}'", allow: [] }
+
+  report:
+    table: public.reports
+    view: public.report_library
+    bubble_rules:
+      - name: Researcher
+        when: "Current User's staff_role is researcher"
+        view_fields: all
+        find_in_searches: true
+        view_attached_files: true
+        auto_binding: all
+      - name: Entitled subscriber
+        when: >-
+          This Report's status is published and Current User's organization's subscription is in good standing
+          and Current User's organization's subscription's tier ≥ This Report's tier_required
+          and (Current User's organization's subscription's agencies contains This Report's agency or tier is enterprise)
+        view_fields: [title, agency, category, published_date, tier_required, summary, body, tags, author]
+        find_in_searches: true
+        view_attached_files: true
+      - name: Any subscriber in good standing
+        when: "This Report's status is published and Current User's organization's subscription is in good standing"
+        view_fields: [title, agency, category, published_date, tier_required, summary, tags, author]
+        find_in_searches: true
+      - name: Everyone else
+        when: "This Report's status is published"
+        view_fields: [title, agency, published_date, tier_required]
+        find_in_searches: true
+    restricted_fields:
+      body: "Entitled subscribers and researchers only (report_library.body is NULL otherwise)"
+      attachment: "Same as body; storage policy on bucket report-files"
+      summary: "Subscribers in good standing"
+      status: "Drafts never leave the researcher workspace"
+    postgres:
+      policies: [reports_select_researcher, reports_insert_researcher, reports_update_researcher, report_tags_select_researcher, report_files_select_entitled, report_files_insert_researcher]
+      view: "report_library (security_barrier): published rows only, summary/body/attachment_path masked by CASE on the caller's entitlements"
+    probes:
+      base_select_draft:       { kind: rows, sql: "select id from public.reports where id = '{{rpt_draft}}'", allow: [researcher] }
+      base_select_published:   { kind: rows, sql: "select body from public.reports where id = '{{rpt_pro_dcd}}'", allow: [researcher] }
+      base_insert:             { kind: dml,  sql: "insert into public.reports (title, agency, category, tier_required, status, body) values ('New', 'DCD', 'forecast', 'pro', 'draft', 'x')", allow: [researcher] }
+      base_update:             { kind: dml,  sql: "update public.reports set title = 'Edited' where id = '{{rpt_pro_dcd}}'", allow: [researcher] }
+      base_delete:             { kind: dml,  sql: "delete from public.reports where id = '{{rpt_pro_dcd}}'", allow: [] }
+      library_find:            { kind: rows, sql: "select id from public.report_library where id = '{{rpt_pro_dcd}}'", allow: [everyone] }
+      library_draft_hidden:    { kind: rows, sql: "select id from public.report_library where id = '{{rpt_draft}}'", allow: [], control: false }
+      library_summary:         { kind: value, sql: "select summary from public.report_library where id = '{{rpt_pro_dcd}}'", allow: [subscribers_in_good_standing, researcher], control: false }
+      library_body_pro_dcd:    { kind: value, sql: "select body from public.report_library where id = '{{rpt_pro_dcd}}'", allow: [org_a, grace_member, researcher], control: false }
+      library_body_basic_dcd:  { kind: value, sql: "select body from public.report_library where id = '{{rpt_basic_dcd}}'", allow: [basic_member, org_a, grace_member, researcher], control: false }
+      library_body_pro_osl:    { kind: value, sql: "select body from public.report_library where id = '{{rpt_pro_osl}}'", allow: [other_org_owner, researcher], control: false }
+      library_write:           { kind: dml,  sql: "update public.report_library set body = 'x' where id = '{{rpt_pro_dcd}}'", allow: [], control: false }
+      attachment_download:     { kind: rows, sql: "select name from storage.objects where bucket_id = 'report-files' and name = '{{rpt_pro_dcd}}/brief.pdf'", allow: [org_a, grace_member, researcher] }
+      attachment_osl_download: { kind: rows, sql: "select name from storage.objects where bucket_id = 'report-files' and name = '{{rpt_pro_osl}}/brief.pdf'", allow: [other_org_owner, researcher] }
+
+  awarded_contract:
+    table: public.awarded_contracts
+    bubble_rules:
+      - name: Active subscriber
+        when: "Current User's organization's subscription is in good standing (any paid tier)"
+        view_fields: all
+        find_in_searches: true
+      - name: Researcher
+        when: "Current User's staff_role is researcher"
+        view_fields: all
+        find_in_searches: true
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+        find_in_searches: false
+    postgres:
+      policies: [awarded_contracts_select_subscriber]
+      column_grants: "select only"
+    probes:
+      select: { kind: rows, sql: "select id from public.awarded_contracts where id = '{{contract_1}}'", allow: [subscribers_in_good_standing, researcher] }
+      search: { kind: rows, sql: "select id from public.awarded_contracts where search @@ websearch_to_tsquery('english', 'radar sustainment')", allow: [subscribers_in_good_standing, researcher] }
+      insert: { kind: dml,  sql: "insert into public.awarded_contracts (piid, agency, vendor_name, amount, award_date) values ('FAKE-1', 'DCD', 'Evil', 1, now())", allow: [] }
+      update: { kind: dml,  sql: "update public.awarded_contracts set amount = 0 where id = '{{contract_1}}'", allow: [] }
+      delete: { kind: dml,  sql: "delete from public.awarded_contracts where id = '{{contract_1}}'", allow: [] }
+
+  contact:
+    table: public.contacts
+    view: public.contacts_directory
+    bubble_rules:
+      - name: Researcher
+        when: "Current User's staff_role is researcher"
+        view_fields: all
+        find_in_searches: true
+        auto_binding: all
+      - name: Pro subscriber
+        when: "subscription in good standing and tier ≥ pro"
+        view_fields: [full_name, title, office, agency, email, phone]
+        find_in_searches: true
+      - name: Basic subscriber
+        when: "subscription in good standing and tier is basic"
+        view_fields: [full_name, title, office, agency]
+        find_in_searches: true
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+    restricted_fields:
+      email: "Pro and above"
+      phone: "Pro and above"
+      notes: "Researchers only"
+    postgres:
+      policies: [contacts_select_researcher, contacts_update_researcher]
+      view: "contacts_directory (security_barrier): rows need contacts.directory, email/phone need contacts.full"
+    probes:
+      base_select:     { kind: rows,  sql: "select notes from public.contacts where id = '{{contact_dcd}}'", allow: [researcher] }
+      base_update:     { kind: dml,   sql: "update public.contacts set title = 'Edited' where id = '{{contact_dcd}}'", allow: [researcher] }
+      directory_find:  { kind: rows,  sql: "select id from public.contacts_directory where id = '{{contact_dcd}}'", allow: [subscribers_in_good_standing, researcher], control: false }
+      directory_email: { kind: value, sql: "select email from public.contacts_directory where id = '{{contact_dcd}}'", allow: [pro_in_good_standing, researcher], control: false }
+      directory_phone: { kind: value, sql: "select phone from public.contacts_directory where id = '{{contact_dcd}}'", allow: [pro_in_good_standing, researcher], control: false }
+
+  crm_opportunity:
+    table: public.crm_opportunities
+    bubble_rules:
+      - name: Member of the owning organization
+        when: "Current User's organization is This Opportunity's organization"
+        view_fields: all
+        find_in_searches: true
+        view_attached_files: true
+        auto_binding: all
+      - name: Everyone else (including researchers and other organizations)
+        when: everyone else
+        view_fields: []
+        find_in_searches: false
+    restricted_fields:
+      organization: "Cannot be changed once set (no moving pipeline rows into another tenant)"
+    postgres:
+      policies: [crm_opportunities_select_member, crm_opportunities_insert_member, crm_opportunities_update_member, crm_opportunities_delete_manager, crm_opportunity_reports_member]
+      integrity: "composite FKs (owner_member_id, org_id) → members(id, org_id): owners must belong to the same org"
+    probes:
+      select:          { kind: rows, sql: "select id from public.crm_opportunities where id = '{{opp_a}}'", allow: [org_a] }
+      count_all_orgs:  { kind: rows, sql: "select 1 where (select count(*) from public.crm_opportunities where org_id = '{{org_b}}') > 0", allow: [other_org_owner] }
+      insert:          { kind: dml,  sql: "insert into public.crm_opportunities (org_id, title, agency, stage) values ('{{org_a}}', 'Injected', 'DCD', 'identified')", allow: [org_a] }
+      update:          { kind: dml,  sql: "update public.crm_opportunities set stage = 'proposal' where id = '{{opp_a}}'", allow: [org_a] }
+      move_to_other_org: { kind: dml, sql: "update public.crm_opportunities set org_id = '{{org_b}}' where id = '{{opp_a}}'", allow: [], control: false }  # even service role is stopped by the composite tenant FK
+      delete:          { kind: dml,  sql: "delete from public.crm_opportunities where id = '{{opp_a}}'", allow: [org_a_managers] }
+
+  crm_note:
+    table: public.crm_notes
+    bubble_rules:
+      - name: Member of the owning organization
+        when: "Current User's organization is This Note's organization"
+        view_fields: all
+        find_in_searches: true
+        auto_binding: { body: "when This Note's author is Current User" }
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+    postgres:
+      policies: [crm_notes_select_member, crm_notes_insert_member, crm_notes_update_author, crm_notes_delete_author_or_manager]
+      integrity: "composite FK (opportunity_id, org_id) → crm_opportunities(id, org_id)"
+    probes:
+      select:  { kind: rows, sql: "select id from public.crm_notes where id = '{{note_a}}'", allow: [org_a] }
+      insert:  { kind: dml,  sql: "insert into public.crm_notes (org_id, opportunity_id, body) values ('{{org_a}}', '{{opp_a}}', 'hello')", allow: [org_a] }
+      cross_tenant_insert: { kind: dml, sql: "insert into public.crm_notes (org_id, opportunity_id, body) values ((select org_id from public.members where user_id = auth.uid()), '{{opp_a}}', 'graft onto org A deal')", allow: [org_a], control: false }
+      update:  { kind: dml,  sql: "update public.crm_notes set body = 'edited' where id = '{{note_a}}'", allow: [pro_member] }
+      delete:  { kind: dml,  sql: "delete from public.crm_notes where id = '{{note_a}}'", allow: [org_a] }
+
+  crm_task:
+    table: public.crm_tasks
+    bubble_rules:
+      - name: Member of the owning organization
+        when: "Current User's organization is This Task's organization"
+        view_fields: all
+        find_in_searches: true
+        auto_binding: all
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+    postgres:
+      policies: [crm_tasks_select_member, crm_tasks_insert_member, crm_tasks_update_member, crm_tasks_delete_manager]
+    probes:
+      select:  { kind: rows, sql: "select id from public.crm_tasks where id = '{{task_a}}'", allow: [org_a] }
+      insert:  { kind: dml,  sql: "insert into public.crm_tasks (org_id, opportunity_id, title) values ('{{org_a}}', '{{opp_a}}', 'Call CO')", allow: [org_a] }
+      update:  { kind: dml,  sql: "update public.crm_tasks set done = true where id = '{{task_a}}'", allow: [org_a] }
+      delete:  { kind: dml,  sql: "delete from public.crm_tasks where id = '{{task_a}}'", allow: [org_a_managers] }
+
+  researcher:
+    table: public.researchers
+    bubble_rules:
+      - name: Researcher
+        when: "Current User's staff_role is researcher"
+        view_fields: all
+        find_in_searches: true
+      - name: Everyone else
+        when: everyone else
+        view_fields: []
+    postgres:
+      policies: [researchers_select_researcher]
+    probes:
+      select: { kind: rows, sql: "select id from public.researchers where id = '{{researcher_1}}'", allow: [researcher] }
+      update: { kind: dml,  sql: "update public.researchers set full_name = 'x' where id = '{{researcher_1}}'", allow: [] }
+
+  internal:
+    table: "ops.*, migration.*, private.*"
+    bubble_rules:
+      - name: Backend only
+        when: "never exposed (Bubble: backend workflows / API connector)"
+        view_fields: []
+    postgres:
+      policies: []
+      column_grants: "schemas ops, migration, private: no usage for anon/authenticated (private functions are execute-only)"
+    probes:
+      stripe_events:  { kind: rows, sql: "select id from ops.stripe_events limit 1", allow: [] }
+      email_outbox:   { kind: rows, sql: "select id from ops.email_outbox limit 1", allow: [] }
+      id_map:         { kind: rows, sql: "select bubble_id from migration.id_map limit 1", allow: [] }
+      change_log:     { kind: rows, sql: "select id from ops.change_log limit 1", allow: [], control: false }
