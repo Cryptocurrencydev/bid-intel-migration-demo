@@ -27,6 +27,7 @@ h2 { font-size: 1.15rem; margin-top: 1.75rem; }
 h3 { font-size: 1rem; }
 p { margin: .4rem 0 .9rem; }
 code, pre { font-family: var(--mono); font-size: .82em; }
+code { overflow-wrap: anywhere; }
 pre { white-space: pre-wrap; word-break: break-word; background: #0d1b2a; color: #dbe7f3; padding: .75rem .9rem; border-radius: 8px; overflow-x: auto; margin: .4rem 0; }
 
 .wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
@@ -104,8 +105,9 @@ button, .btn { font: inherit; font-weight: 600; padding: .5rem .9rem; border-rad
 .opp .v { font-weight: 700; font-variant-numeric: tabular-nums; }
 
 .empty { border: 2px dashed var(--line); border-radius: var(--radius); padding: 1.25rem; text-align: center; color: var(--muted); background: #fafbfc; }
-.probe { display: grid; grid-template-columns: 1fr auto; gap: .5rem; padding: .45rem 0; border-bottom: 1px solid var(--line); font-size: .86rem; }
+.probe { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; padding: .45rem 0; border-bottom: 1px solid var(--line); font-size: .86rem; }
 .probe:last-child { border-bottom: 0; }
+.probe > div { min-width: 0; }
 
 .matrix td, .matrix th { padding: .3rem .4rem; text-align: center; font-size: .75rem; }
 .matrix td:first-child, .matrix th:first-child { text-align: left; position: sticky; left: 0; background: #fff; z-index: 1; white-space: nowrap; }

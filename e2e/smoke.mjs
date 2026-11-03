@@ -9,7 +9,7 @@ const shots = shotsIdx > 0 ? process.argv[shotsIdx + 1] : null;
 if (shots) mkdirSync(shots, { recursive: true });
 const pages = ["/", "/reports", "/contracts", "/contracts?q=radar", "/crm", "/security", "/migration"];
 const personas = ["owner", "member", "other", "researcher", "lapsed", "anon"];
-const viewports = [{ name: "mobile", width: 390, height: 844 }, { name: "desktop", width: 1280, height: 900 }];
+const viewports = (process.env.SMOKE_WIDTHS ?? "390,1280").split(",").map((w) => ({ name: Number(w) < 800 ? `mobile${w}` : "desktop", width: Number(w), height: 900 }));
 
 const browser = await chromium.launch();
 const problems = [];
