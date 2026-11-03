@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { MainNav, PersonaSwitcher } from "@/components/Chrome";
 import { snapshotMeta } from "@/lib/snapshot";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "Bidmarker — Bubble → Supabase migration demo",
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </span>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
