@@ -10,7 +10,7 @@ Local time (WAT, UTC+1). One build session, 2026-11-03 → 2026-11-04.
 | 3 | Stripe + Postmark + attacker suite | 00:06 | 00:12 | 6 min | webhook core, sender adapter, first-login magic link; 24 unit + 58 DB tests. Rewrote policies to `(select helper())` (billing suite 5.2 s → 0.1 s). Proved the attacker suite catches an opened policy (10 failures) |
 | 4 | Snapshot export + UI | 00:12 | 00:23 | 11 min | per-persona export through PostgREST (hit `max_rows = 1000`, aligned), Next.js pages, Playwright smoke at 390/1280 |
 | 5 | Rollback log, docs, CI | 00:23 | 00:30 | 7 min | `ops.change_log` + replay planner, list-field checksums, drift → fail → heal rehearsal, README, MIGRATION.md, GitHub Actions |
-| 6 | Publish | 00:30 | 00:40 | 10 min | gitleaks (clean), public repo, `vercel link`; CI run 1: database job green, smoke failed (10px overflow on /crm at 390px with Linux fonts). Fixed, smoke now also checks 320px |
+| 6 | Publish + verify | 00:30 | 00:42 | ~15 min | gitleaks (clean), public repo, `vercel link` (git-connected). CI run 1: database job green, smoke failed (10px overflow on /crm at 390px with Linux fonts). Fixed; smoke also checks 320px. CI run 2 green (gitleaks 6 s, app 106 s, database 178 s, of which Supabase start 75 s and migration rehearsal 52 s). Live smoke at 320/390/1280: 96 visits, 0 problems |
 
 Measured inside the pipeline (local, Apple Silicon + Colima):
 
