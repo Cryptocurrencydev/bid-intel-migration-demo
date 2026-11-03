@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",
+    "@vercel/analytics": "^2.0.1",
     "next": "^15.5.29",
     "pg": "^8.23.1",
     "react": "^19.3.1",
